@@ -35,6 +35,8 @@ const uint8_t chip8_fontset[80] =
 void draw(struct chip8_system* sys, uint8_t x, uint8_t y, uint8_t n)
 {
 	sys->V[15] = 0;
+	x %= 64;
+	y %= 32;
 	for (int j = 0; j < n; j++)
 	{
 		uint8_t pix = sys->memory[sys->I + j];
