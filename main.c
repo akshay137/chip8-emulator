@@ -6,18 +6,26 @@
 
 int main(int argc, char* args[])
 {
+	if (argc < 2)
+	{
+		printf("usage: %s <file name>\n", args[0]);
+		return -1;
+	}
+	
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
 		printf("%s\n", SDL_GetError());
 		return -1;
 	}
 	
-	int w = 640 / 1;
-	int h = 320 / 1;
+	const int w = 640;
+	const int h = 320;
 	SDL_Window* win = SDL_CreateWindow(args[1], 0, 0, w, h, 0);
 	if (win == NULL)
 	{
 		printf("%s\n", SDL_GetError());
+		SDL_Quit();
+		return -1;
 	}
 	
 	SDL_Surface* screen = SDL_GetWindowSurface(win);
@@ -112,9 +120,6 @@ int main(int argc, char* args[])
 		SDL_Delay(1);
 	}
 	
-	//chip8_dump(&c8);
-	
-	putc('\n', stdout);
 	SDL_DestroyWindow(win);
 	SDL_Quit();
 	return 0;
