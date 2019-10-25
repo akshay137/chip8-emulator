@@ -1,6 +1,5 @@
 #include "cpu.h"
 
-#include <math.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
@@ -42,7 +41,6 @@ void draw(struct chip8_system* sys, uint8_t x, uint8_t y, uint8_t n)
 		for (int i = 0; i < 8; i++)
 		{
 			if ((pix & (0x80 >> i)) != 0)
-			//if ((pix >> (7-i)) & 0x1)
 			{
 				int index = (x + i + ((y + j) * 64));
 				if (sys->display[index] == 1)
@@ -143,12 +141,6 @@ int chip8_tick(struct chip8_system* sys)
 		case 1:	// jump to address
 			sys->PC = sys->opcode & 0x0fff;
 			PC_incr = 0;
-			if (sys->PC <= 512)
-			{
-				printf("Jumped to noexistent code\n");
-				chip8_dump(sys);
-				return 0;
-			}
 			break;
 		
 		case 2:	// call function / subroutine
@@ -158,12 +150,6 @@ int chip8_tick(struct chip8_system* sys)
 			}
 			sys->stack[sys->sp++] = sys->PC;
 			sys->PC = sys->opcode & 0x0fff;
-			if (sys->PC <= 512)
-			{
-				printf("Jumped to noexistent code\n");
-				chip8_dump(sys);
-				return 0;
-			}
 			PC_incr = 0;
 			break;
 		
@@ -243,7 +229,6 @@ int chip8_tick(struct chip8_system* sys)
 					break;
 				
 				default:
-					//printf("Unrecognized sys->opcode: %4x\n", sys->opcode);
 					print_opcode(sys, "unrecognized opcode");
 					return 0;
 					break;
@@ -286,7 +271,6 @@ int chip8_tick(struct chip8_system* sys)
 					break;
 				
 				default:
-					//printf("Unrecognized sys->opcode: %4x\n", sys->opcode);
 					print_opcode(sys, "unrecognized opcode");
 					return 0;
 					break;
@@ -352,7 +336,6 @@ int chip8_tick(struct chip8_system* sys)
 					break;
 				
 				default:
-					//printf("Unrecognized opcode: %4x\n", opcode);
 					print_opcode(sys, "unrecognized opcode");
 					return 0;
 					break;
@@ -360,7 +343,6 @@ int chip8_tick(struct chip8_system* sys)
 			break;
 		
 		default:
-			//printf("Unrecognized opcode: %4x\n", opcode);
 			print_opcode(sys, "unrecognized opcode");
 			return 0;
 			break;
@@ -378,9 +360,6 @@ int chip8_tick(struct chip8_system* sys)
 	}
 	
 	sys->clock += 1;
-	//chip8_dump(sys);
-	//printf("\n");
-	//printf("[%4x]:%4x\r", sys->PC, sys->opcode);
 	sys->PC += PC_incr;
 	return 1;
 }
