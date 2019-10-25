@@ -35,16 +35,14 @@ const uint8_t chip8_fontset[80] =
 void draw(struct chip8_system* sys, uint8_t x, uint8_t y, uint8_t n)
 {
 	sys->V[15] = 0;
-	x %= 64;
-	y %= 32;
-	for (int j = 0; j < n; j++)
+	for (uint8_t j = 0; j < n; j++)
 	{
-		uint8_t pix = sys->memory[sys->I + j];
-		for (int i = 0; i < 8; i++)
+		uint8_t pix = sys->memory[(sys->I & 0xfff) + j];
+		for (uint8_t i = 0; i < 8; i++)
 		{
 			if ((pix & (0x80 >> i)) != 0)
 			{
-				int index = (x + i + ((y + j) * 64));
+				int index = ((x + i) % 64) + (((y + j) % 32) * 64);
 				if (sys->display[index] == 1)
 					sys->V[15] = 1;
 				sys->display[index] ^= 1;
@@ -61,6 +59,9 @@ int chip8_dump(struct chip8_system* sys)
 	printf("sp: %d\n", sys->sp);
 	printf("stack: %4x\n", sys->stack[sys->sp == 0 ? sys->sp : (sys->sp - 1)]);
 	printf("clock: %ld\n", sys->clock);
+	printf("reg: ");
+	for (int i = 0; i < 16; i++)
+		printf("%x ", sys->V[i]);
 	printf("\n");
 	return 0;
 }
@@ -231,6 +232,7 @@ int chip8_tick(struct chip8_system* sys)
 					break;
 				
 				default:
+					//printf("Unrecognized sys->opcode: %4x\n", sys->opcode);
 					print_opcode(sys, "unrecognized opcode");
 					return 0;
 					break;
@@ -273,6 +275,7 @@ int chip8_tick(struct chip8_system* sys)
 					break;
 				
 				default:
+					//printf("Unrecognized sys->opcode: %4x\n", sys->opcode);
 					print_opcode(sys, "unrecognized opcode");
 					return 0;
 					break;
@@ -338,6 +341,7 @@ int chip8_tick(struct chip8_system* sys)
 					break;
 				
 				default:
+					//printf("Unrecognized opcode: %4x\n", opcode);
 					print_opcode(sys, "unrecognized opcode");
 					return 0;
 					break;
@@ -345,6 +349,7 @@ int chip8_tick(struct chip8_system* sys)
 			break;
 		
 		default:
+			//printf("Unrecognized opcode: %4x\n", opcode);
 			print_opcode(sys, "unrecognized opcode");
 			return 0;
 			break;
